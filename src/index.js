@@ -1,38 +1,44 @@
 'use strict';
 
-import Rx          from 'rxjs/Rx'
+import Rx          from 'rxjs/Rx';
+import LoDash      from 'lodash';
 import Good        from 'good';
 import GoodConsole from 'good-console';
 
-export default {
-
-	setup: {
-		config     : {},
-		connection : {}
+let Setup = {
+	name : 'console',
+	opts : {   // These are the plugin's options
+		events : {
+			log      : '*',
+			response : '*',
+			error    : '*'
+		}
 	},
+	conf : {}  // these will be used on hapi instantiation
+	conn : {}, // These will be used on hapi connection setup
+};
 
-	register: (server, name) => Rx.Observable.create(subscriber => {
+export default (setup={}) => {
 
-		let response = {name:name};
+	setup = LoDash.merge(Setup, setup);
+	setup.register = server => Rx.Observable.create(subscriber => {
 
 		server.register({
 			register : Good,
 			options  : {
 				reporters: [{
 					reporter : GoodConsole,
-					events   : {
-						log      : '*',
-						response : '*',
-						error    : '*'
-					}
+					events   : setup.opts.events || {}
 				}]
 			}
 		}, err => {
 			if (err) return subscriber.error(err);
-			subscriber.next(response);
+			subscriber.next(setup);
 			subscriber.complete();
 		})
 
 		return () => {}
-	})
-};
+	});
+
+	return setup;
+}
