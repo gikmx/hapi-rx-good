@@ -14,8 +14,8 @@ let Setup = {
 			error    : '*'
 		}
 	},
-	conf : {}  // these will be used on hapi instantiation
-	conn : {}, // These will be used on hapi connection setup
+	conf : {}, // these will be used on hapi instantiation
+	conn : {}  // These will be used on hapi connection setup
 };
 
 export default (setup={}) => {
